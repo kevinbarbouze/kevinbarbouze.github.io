@@ -1,21 +1,22 @@
+
 let game;
 let grid;
 let row = 0;
 let column = 0;
 let cell;
 let oldCell;
+let mainColor;
 
 function setup() {
   createCanvas(420, 420);
   game = new Game(25);
   grid = game.gameBoard.grid;
   console.log(game)
+  console.log(this)
 }
 
 function draw() {
-  if (cell !== oldCell && cell != undefined) {
-    //fallInBoard();
-  }
+
 }
 
 
@@ -43,9 +44,8 @@ function mouseClicked() {
     oldCell = cell;
   }
   cell = this.calculateCell();
-  console.log("toggleColor")
   toggleCellColor();
-
+  //fallInBoard();
 }
 
 function toggleCellColor() {
@@ -58,24 +58,38 @@ function getCellColor() {
   let colors = ["#292f56", "#1e4572", "#005c8b", "#007498", "#008ba0", "#00a3a4", "#00bca1", "#00d493", "#69e882", "#acfa70"];
   let randomNumber = Math.round(random(0, colors.length - 1));
   let color = colors[randomNumber];
-  while (color == cell.color) {
-    randomNumber = Math.round(random(0, colors.length - 1));
-    color = colors[randomNumber];
-  };
-  return color;
+  return mainColor ||color;
+}
+
+function getCoord(row, column) {
+  return {
+    x: row * cell.wx,
+    y: column * cell.wy
+  }
+}
+
+function getCellAndRowByCoord(x, y) {
+  return {
+    row: Math.round(x / cell.wx),
+    column: Math.round(y / cell.wy)
+  }
 }
 
 
 function fallInBoard() {
-  if (cell.column < game.size) {
-
-    cell.column = cell.column + 1
-    let coord = cell.getCoord(cell.row, cell.column);
-    cell.color = getCellColor();
-    cell.x = coord.x;
-    cell.y = coord.y;
-    cell?.render();
-
+  let column = 0;
+  if (cell) {
+    column = cell.column
+    if (cell.column <= game.size) {
+      while (column < game.size) {
+        column = column + 1
+        let newCell = getCell(cell.row, column);
+        if (newCell) {
+          newCell.color = getCellColor();
+          newCell.render();
+        }
+      }
+    }
   }
 }
 
@@ -88,4 +102,17 @@ document.addEventListener("contextmenu", (event) => {
     cell.color = "black";
     cell.render();
   }
+
+  
+});
+
+document.addEventListener("click",(event) => {
+  let target = event.target;
+    if(target.dataset.color){
+      if(target.dataset.color !== "magic"){
+        mainColor = target.dataset.color;
+      }else{
+        mainColor = null
+      }
+    }
 })
