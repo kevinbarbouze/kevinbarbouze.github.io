@@ -19,6 +19,17 @@ function draw() {
 
 }
 
+function mouseDragged() {
+  if (cell) {
+    oldCell = cell;
+  }
+  cell = this.calculateCell();
+  if (oldCell !== cell) {
+    toggleCellColor();
+    //fallInBoard();
+  }
+}
+
 
 
 function getCell(x = row, y = column) {
